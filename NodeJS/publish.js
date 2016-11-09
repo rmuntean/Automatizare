@@ -3,11 +3,11 @@ var client = mqtt.connect('mqtt://test.mosquitto.org')
 
 
 client.subscribe('senzor1')
-var date = new Date().getTime;
-console.log(new Date().getTime().toString());
+
+console.log('before');
 client.publish('senzor1', '23.45555')
-console.log(new Date().getTime().toString());
-var a="BBB"
+console.log("after");
+
 //client.on('message', function (topic, message1) {
 //  a=message1.toString();
 //  console.log(a)
