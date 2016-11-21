@@ -9,26 +9,26 @@ bluebird.promisifyAll(MongoClient);
 
 const connection ="mongodb://localhost:27017/automatizare";
 
-client.subscribe('presence')
+client.subscribe('senzor1')
 client.on('message', function (topic, message) {
     var newValue = {
         temperature: message.toString(),
         date: Date.now()
     };
    console.log(message.toString());
-   return new Promise(function(resolve,reject) {
-        var theDb;
-        return MongoClient.connectAsync(connection)
-            .then( function(db) {
-                  theDb = db;
-                  return theDb.collection("senzor1").insertAsync(newValue);
-            })
-            .then(resolve)
-            .finally(() => {
-                theDb.close()
-            })
-            .catch(reject);
-   });
+//   return new Promise(function(resolve,reject) {
+//        var theDb;
+//        return MongoClient.connectAsync(connection)
+//            .then( function(db) {
+//                  theDb = db;
+//                  return theDb.collection("senzor1").insertAsync(newValue);
+//            })
+//            .then(resolve)
+//            .finally(() => {
+//                theDb.close()
+//            })
+//            .catch(reject);
+//   });
 
 });
 

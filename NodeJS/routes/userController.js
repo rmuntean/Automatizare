@@ -5,7 +5,7 @@ var MongoCollection  = require('mongodb').Collection;
 bluebird.promisifyAll(MongoCollection.prototype);
 bluebird.promisifyAll(MongoClient);
 
-const connection ="mongodb://" + process.env.DB_CONNECTION + "/test";
+const connection ="mongodb://" + process.env.DB_CONNECTION + "/users";
 
 userController = {
     getUsers: (err, callback) => {
