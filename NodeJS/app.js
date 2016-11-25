@@ -34,6 +34,7 @@ app.use('/api', routes);
 
 //read senzor temperature
 var TemperatureController = require('./routes/temperatureController');
+var SenzorController = require('./routes/senzorController');
 
 
 var client = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
@@ -41,6 +42,11 @@ client.subscribe('sensorsfeed/temperature/#')
 client.on('message', function (topic, message) {
     //temp=23.56=18fe34de7370
         let mac_id = message.toString().split('=')[2]
+        let senzor = {
+                             _id: message.toString().split('=')[2],
+                             mac_id: message.toString().split('=')[2],
+                             hist: '0.2'
+                         };
 if (message.toString().split('=')[0] == 'temp'){
 
     var temperature = {
@@ -48,6 +54,14 @@ if (message.toString().split('=')[0] == 'temp'){
         date: Date.now()
     };
     console.log(temperature);
+    SenzorController.addSenzor(senzor)
+        .then(function() {
+             console.log("DONE")
+        })
+        .catch(function() {
+             console.log("Failed")
+        });
+
     TemperatureController.saveTemperature(temperature,mac_id)
         .then(function() {
              console.log("DONE")
