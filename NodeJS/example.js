@@ -1,20 +1,8 @@
-var mqtt = require('mqtt')
-var client = mqtt.connect('mqtt://test.mosquitto.org')
-var bluebird = require('bluebird');
-var MongoClient = require('mongodb').MongoClient;
-var MongoCollection  = require('mongodb').Collection;
+var mqtt = require('mqtt');
+var client = mqtt.connect({port: 1883, host: '192.168.1.150', keepalive: 10000});
 
-bluebird.promisifyAll(MongoCollection.prototype);
-bluebird.promisifyAll(MongoClient);
-
-const connection ="mongodb://localhost:27017/automatizare";
-
-client.subscribe('senzor1')
+client.subscribe('sensorsfeed/commandsget/18fe34de7370')
 client.on('message', function (topic, message) {
-    var newValue = {
-        temperature: message.toString(),
-        date: Date.now()
-    };
    console.log(message.toString());
 //   return new Promise(function(resolve,reject) {
 //        var theDb;

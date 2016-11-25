@@ -47,13 +47,13 @@ temperatureController = {
         });
     },
 
-    saveTemperature: (temperature) => {
+    saveTemperature: (temperature,mac_id) => {
         return new Promise(function(resolve,reject) {
             var theDb;
             return MongoClient.connectAsync(connection)
                 .then( function(db) {
                     theDb = db;
-                    return theDb.collection("temperature").insertAsync(temperature);
+                    return theDb.collection(mac_id).insertAsync(temperature);
                 })
                 .then(resolve)
                 .finally(() => {

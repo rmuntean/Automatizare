@@ -7,8 +7,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var dotenv = require('dotenv');
 var cors = require('cors');
-var mqtt = require('mqtt')
-var client = mqtt.connect('mqtt://test.mosquitto.org')
+var mqtt = require('mqtt');
+
 var app = express();
 
 dotenv.load();
@@ -35,20 +35,42 @@ app.use('/api', routes);
 //read senzor temperature
 var TemperatureController = require('./routes/temperatureController');
 
-client.subscribe('senzor1')
+
+var client = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
+client.subscribe('sensorsfeed/temperature/#')
 client.on('message', function (topic, message) {
+    //temp=23.56=18fe34de7370
+        let mac_id = message.toString().split('=')[2]
+if (message.toString().split('=')[0] == 'temp'){
+
     var temperature = {
-        temperature: message.toString(),
+        temperature: message.toString().split('=')[1],
         date: Date.now()
     };
-    console.log(message.toString());
-    TemperatureController.saveTemperature(temperature)
+    console.log(temperature);
+    TemperatureController.saveTemperature(temperature,mac_id)
         .then(function() {
              console.log("DONE")
         })
         .catch(function() {
              console.log("Failed")
         });
+    }else if (message.toString().split('=')[0] == 'init'){
+         var clientsend = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
+         clientsend.subscribe('sensorsfeed/commands/'+mac_id)
+         clientsend.publish('sensorsfeed/commands/'+mac_id, 'mod=hist=0.2=interval=10')
+         clientsend.end()
+
+            var clientget = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
+            clientget.subscribe('sensorsfeed/response/'+mac_id)
+            clientget.on('message', function (topic, message) {
+            console.log(topic);
+            console.log(message.toString());
+            clientget.end()
+
+});
+        console.log(message.toString());
+    }
 });
 
 // catch 404 and forward to error handler
