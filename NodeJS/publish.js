@@ -5,7 +5,7 @@ var client = mqtt.connect('mqtt://test.mosquitto.org')
 client.subscribe('senzor1')
 
 console.log('before');
-client.publish('senzor1', '23.45555')
+client.publish('senzor1', '21.45555')
 console.log("after");
 
 //client.on('message', function (topic, message1) {

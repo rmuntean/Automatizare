@@ -14,6 +14,9 @@ var initialState = {
     },
     users:{
         userList:null
+    },
+    temperature:{
+        temperatureList:null
     }
 };
 

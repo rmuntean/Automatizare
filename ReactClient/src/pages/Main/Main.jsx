@@ -11,6 +11,7 @@ import Login from './../Login/Login.jsx';
 import Signup from './../Login/Signup.jsx';
 import Users from './../Users/Users.jsx';
 import Board from './../Board/Board.jsx';
+import Temperature from './../Temperature/Temperature.jsx';
 
 import {toggleMenu} from './../../redux/actions';
 import store from './../../redux/store';
@@ -18,6 +19,7 @@ import store from './../../redux/store';
 const NoMatch = () => {
     return <div>NotFound</div>;
 };
+console.log("Running Main.js");
 
 class Main extends React.Component {
     constructor(props) {
@@ -30,9 +32,9 @@ class Main extends React.Component {
 
     componentWillMount() {
         this.unsubscribe = store.subscribe(() => {
-            this.setState(store.getState());
-        });
-    }
+                 this.setState(store.getState());
+             });
+         }
 
     componentWillUnmount() {
         this.unsubscribe();
@@ -40,7 +42,8 @@ class Main extends React.Component {
 
     render() {
         let state = store.getState();
-
+    console.log("Main Render STATE=");
+    console.log(state);
         return (
             <Provider store={store}>
                 <div>
@@ -59,12 +62,16 @@ class Main extends React.Component {
                         <Link to="/board">
                             <MenuItem onTouchTap={ this.handleToggle }>Board</MenuItem>
                         </Link>
+                        <Link to="/temperature">
+                            <MenuItem onTouchTap={ this.handleToggle }>Temperature</MenuItem>
+                        </Link>
                     </Drawer>
 
                     <Match pattern="/login" component={Login} />
                     <Match pattern="/signup" component={Signup} />
                     <Match pattern="/users" component={Users} />
                     <Match pattern="/board" component={Board} />
+                    <Match pattern="/temperature" component={Temperature} />
                 </div>
             </Provider>
         );

@@ -1,7 +1,8 @@
 import {
     LOGGED_IN,
     TOGGLE_MENU,
-    GOT_USERS
+    GOT_USERS,
+    GOT_TEMPERATURE
 } from './actions';
 import {combineReducers} from 'redux'
 
@@ -39,10 +40,22 @@ function users(state = null, action) {
     }
 }
 
+function temperature(state = null, action) {
+    switch (action.type) {
+        case GOT_TEMPERATURE:
+            return Object.assign({}, state, {
+                temperatureList: action.value
+            });
+        default:
+            return state;
+    }
+}
+
 const reducers = combineReducers({
     user,
     main,
-    users
+    users,
+    temperature
 });
 
 export default reducers

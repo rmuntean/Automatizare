@@ -6,7 +6,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Main from './pages/Main/Main.jsx';
 
 injectTapEventPlugin();
-
+console.log("Running app.js");
 ReactDOM.render(
     <Router>
         <MuiThemeProvider>
@@ -15,3 +15,4 @@ ReactDOM.render(
     </Router>,
     document.querySelector('#app')
 );
+console.log("Running app.js -- END");

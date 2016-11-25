@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var UserController = require('./userController');
+var TemperatureController = require('./temperatureController');
 var BoardController = require('./boardController');
 
 // Authentication and Authorization Middleware
@@ -116,6 +117,16 @@ router.get('/private/messages', auth, function(req, res) {
 
 router.get('/private/users', auth, function(req, res) {
     UserController.getUsers(
+        (code)=>{
+            res.sendStatus(status);
+        },
+        (users)=>{
+            res.send(users);
+        });
+});
+
+router.get('/private/temperature', auth, function(req, res) {
+    TemperatureController.getTemperature(
         (code)=>{
             res.sendStatus(status);
         },

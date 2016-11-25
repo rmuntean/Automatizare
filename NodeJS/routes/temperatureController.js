@@ -8,12 +8,12 @@ bluebird.promisifyAll(MongoClient);
 const connection ="mongodb://" + process.env.DB_CONNECTION + "/automatizare";
 
 temperatureController = {
-    getUsers: (err, callback) => {
+    getTemperature: (err, callback) => {
         var theDb;
         MongoClient.connectAsync(connection)
             .then(function(db) {
                 theDb = db;
-                return theDb.collection("user").findAsync({});
+                return theDb.collection("temperature").findAsync({});
             })
             .then(function (cursor) {
                 cursor.toArray((err, items) => {
