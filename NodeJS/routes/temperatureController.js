@@ -13,7 +13,7 @@ temperatureController = {
         MongoClient.connectAsync(connection)
             .then(function(db) {
                 theDb = db;
-                return theDb.collection("temperature").findAsync({});
+                return theDb.collection("a8fe34de7370").findAsync({});
             })
             .then(function (cursor) {
                 cursor.toArray((err, items) => {

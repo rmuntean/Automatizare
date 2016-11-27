@@ -7,33 +7,26 @@ bluebird.promisifyAll(MongoClient);
 
 const connection ="mongodb://" + process.env.DB_CONNECTION + "/automatizare";
 
-temperatureController = {
-    getTemperature: (err, callback) => {
-        var theDb;
-        MongoClient.connectAsync(connection)
-            .then(function(db) {
-                theDb = db;
-                return theDb.collection("temperature").findAsync({});
-            })
-            .then(function (cursor) {
-                cursor.toArray((err, items) => {
-                    callback(items);
-                });
-            })
-            .finally(() => {theDb.close()})
-            .catch((err)=>{
-                console.log(err);
-                err(500);
-            });
-    },
+var senzors=[];
 
-    getUser: (user) => {
+senzorController = {
+    populateSenzors: () => {
+    console.log('START-populateSenzors');
+    senzorController.getSenzors().then(function(result){
+    console.log('COMPLETE-populateSenzors');
+    senzors=result;
+    });
+    },
+    getprepopulatedSenzors: () => {
+       return senzors;
+    },
+    getSenzors: () => {
         return new Promise(function(resolve,reject) {
             var theDb;
             return MongoClient.connectAsync(connection)
                 .then(function(db) {
                     theDb = db;
-                    return theDb.collection("user").findAsync({"username":user});
+                    return theDb.collection("senzors").findAsync({});
                 })
                 .then(function (cursor) {
                     cursor.toArray((err, items) => {
@@ -65,6 +58,6 @@ temperatureController = {
 
 };
 
-module.exports = temperatureController;
+module.exports = senzorController;
 
 

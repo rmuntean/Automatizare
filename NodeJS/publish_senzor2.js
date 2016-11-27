@@ -4,7 +4,7 @@ dotenv.load();
 
 
 var clientget = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
-const mac_id='28fe34de7370';
+const mac_id='a8fe34de7370';
 var hist=0.5;
 var interval=5;
 
@@ -16,7 +16,7 @@ var clientinit = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.M
 
 
 function request() {
-    clientinit.publish('sensorsfeed/temperature/'+mac_id, 'temp='+ Math.floor(Math.random() * 100) +'.00='+mac_id )
+    clientinit.publish('sensorsfeed/temperature/'+mac_id, 'temp='+ Math.floor(Math.random() * 100) +'.99='+mac_id )
 }
 
 var run = setInterval(request, interval*1000);

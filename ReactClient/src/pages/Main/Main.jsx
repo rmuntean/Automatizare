@@ -4,7 +4,8 @@ import Match from 'react-router/Match'
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import Link from 'react-router/Link'
-
+import axios from 'axios';
+import {logIn} from './../../redux/actions';
 
 import Header from './../../components/Header/Header.jsx';
 import Login from './../Login/Login.jsx';
@@ -31,9 +32,14 @@ class Main extends React.Component {
     }
 
     componentWillMount() {
+
         this.unsubscribe = store.subscribe(() => {
                  this.setState(store.getState());
              });
+        axios.get("/api/private/profile")
+             .then(function (response) {
+                        store.dispatch(logIn(response.data.name));
+                    })
          }
 
     componentWillUnmount() {

@@ -23,18 +23,10 @@ class ExampleChart extends React.Component {
 //          vAxis: {title: 'Temperature C ', minValue: 0, maxValue: 15},
           legend: 'none'
       },
-      rows: [
-            [ 8,      12],
-               [ 8,      12],
-                  [ 4,      5.5],
-            [ 11,     14],
-            [ 4,      5],
-            [ 3,      3.5],
-            [ 6.5,    7]
-      ],
+      rows: this.props.rows,
       columns: [
         {
-            'type': 'number',
+            'type': 'date',
             'label' : 'Time'
         },
         {
@@ -45,11 +37,11 @@ class ExampleChart extends React.Component {
     }
   }
   render() {
- // console.log(this.state.rows);
+  // console.log(this.state.rows);
     return (
       <Chart
         chartType="LineChart"
-        rows={this.state.rows}
+        rows={this.props.rows}
         columns={this.state.columns}
         options={this.state.options}
         graph_id="LineChart"

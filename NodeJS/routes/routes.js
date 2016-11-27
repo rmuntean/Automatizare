@@ -125,7 +125,7 @@ router.get('/private/users', auth, function(req, res) {
         });
 });
 
-router.get('/private/temperature', auth, function(req, res) {
+router.get('/private/temperature', function(req, res) {
     TemperatureController.getTemperature(
         (code)=>{
             res.sendStatus(status);

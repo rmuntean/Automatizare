@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import store from './../../redux/store';
 import {logIn} from './../../redux/actions';
 import axios from 'axios';
+import {browserHistory} from 'react-router';
 
 class Login extends React.Component {
     constructor(props) {
@@ -52,6 +53,9 @@ class Login extends React.Component {
             })
             .then(function (response) {
                 store.dispatch(logIn(response.data.name));
+//                browserHistory.push('/');
+//                location.replace('/');
+//                    history.pushState('/');
             })
             .catch(function (error) {
                 alert('fail');

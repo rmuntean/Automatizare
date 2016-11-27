@@ -36,17 +36,27 @@ app.use('/api', routes);
 var TemperatureController = require('./routes/temperatureController');
 var SenzorController = require('./routes/senzorController');
 
+function sendSenzorCommand(mac_id,command){
+         let clientsend = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
+         clientsend.subscribe('sensorsfeed/commands/'+mac_id)
+         clientsend.publish('sensorsfeed/commands/'+mac_id, command)
+         clientsend.end()
+}
+
+SenzorController.populateSenzors();
+//setInterval(function(){console.log(SenzorController.getprepopulatedSenzors())},3000,3000);
+setTimeout(function(){console.log(SenzorController.getprepopulatedSenzors())},3000);
+
+SenzorController.populateSenzors();
+
+console.log(SenzorController.getprepopulatedSenzors());
 
 var client = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
 client.subscribe('sensorsfeed/temperature/#')
 client.on('message', function (topic, message) {
     //temp=23.56=18fe34de7370
         let mac_id = message.toString().split('=')[2]
-        let senzor = {
-                             _id: message.toString().split('=')[2],
-                             mac_id: message.toString().split('=')[2],
-                             hist: '0.2'
-                         };
+
 if (message.toString().split('=')[0] == 'temp'){
 
     var temperature = {
@@ -54,6 +64,13 @@ if (message.toString().split('=')[0] == 'temp'){
         date: Date.now()
     };
     console.log(temperature);
+            let senzor = {
+                                 _id: message.toString().split('=')[2],
+                                 mac_id: message.toString().split('=')[2],
+                                 hist: process.env.HIST,
+                                 interval: process.env.INTERVAL
+                             };
+
     SenzorController.addSenzor(senzor)
         .then(function() {
              console.log("DONE")
@@ -70,19 +87,17 @@ if (message.toString().split('=')[0] == 'temp'){
              console.log("Failed")
         });
     }else if (message.toString().split('=')[0] == 'init'){
-         var clientsend = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
-         clientsend.subscribe('sensorsfeed/commands/'+mac_id)
-         clientsend.publish('sensorsfeed/commands/'+mac_id, 'mod=hist=0.2=interval=10')
-         clientsend.end()
-
+            sendSenzorCommand(mac_id,'mod=hist=' + process.env.HIST + '=interval=' + process.env.INTERVAL);
+var mm="";
             var clientget = mqtt.connect({port: process.env.MQTT_PORT , host: process.env.MQTT_HOST, keepalive: 10000});
-            clientget.subscribe('sensorsfeed/response/'+mac_id)
-            clientget.on('message', function (topic, message) {
-            console.log(topic);
-            console.log(message.toString());
-            clientget.end()
+                           clientget.subscribe('sensorsfeed/response/'+mac_id)
+                           clientget.on('message', function (topic, message) {
+                               console.log(topic);
+                               mm=message.toString();
+                               console.log(message.toString());
+                               clientget.end()
+                           });
 
-});
         console.log(message.toString());
     }
 });

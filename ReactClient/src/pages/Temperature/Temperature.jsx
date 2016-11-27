@@ -20,77 +20,43 @@ function getFormattedDate(date1) {
   minutes = minutes.length > 1 ? minutes : '0' + minutes;
   var seconds = date.getSeconds().toString();
   seconds = seconds.length > 1 ? seconds : '0' + seconds;
-
   return hour + ':' + minutes + ':' + seconds + ' ' + month + '/' + day + '/' + year;
 }
-
 class Temperature extends React.Component {
     constructor(props) {
          super(props);
          this.state = store.getState();
      }
-
      componentWillMount() {
          this.unsubscribe = store.subscribe(() => {
              this.setState(store.getState());
          });
      }
-
      componentDidMount() {
+       setInterval(function(){
          axios.get("/api/private/temperature")
              .then(function (response) {
-                console.log("XXXXXXXXXXXX");
-                console.log(response.data);
-                 store.dispatch(gotTemperature(response.data));
-
+                let temperatureList=[];
+                response.data.map(function(value){
+                    temperatureList.push([new Date(value.date),parseInt(value.temperature)]);
+                });
+                store.dispatch(gotTemperature(temperatureList));
              })
              .catch(function (error) {
-                 alert('fail');
+                // alert('fail-DidMount');
+                 console.log('fail-DidMount');
                  console.log(error);
              });
+       }, 10000);
      }
-
      componentWillUnmount() {
          this.unsubscribe();
      }
-
      render() {
          let temperature = store.getState().temperature;
-         let data = null;
-         console.log(store.getState().temperature);
-         if (temperature.temperatureList) {
-             data = temperature.temperatureList.map(function(value){
-                return (<TableRow key={value._id}>
-                                 <TableRowColumn>{value.temperature}</TableRowColumn>
-                                 <TableRowColumn>{getFormattedDate(value.date)}</TableRowColumn>
-                             </TableRow>);
-             });
-             console.log(data);
-             let rr=[];
-             rr = temperature.temperatureList.map(function(value){
-                    let xx=[];
-                    xx.push([value.temperature,value.date]);
-                  return xx;
-             });
-
-             console.log('BBBBBBBB');
-             console.log(rr);
-        }
          return (
              <div>
-                <ExampleChart />
-                <Table>
-                    <TableHeader displaySelectAll={false}>
-                        <TableRow>
-                            <TableHeaderColumn>Temperature</TableHeaderColumn>
-                            <TableHeaderColumn>Date</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody displayRowCheckbox={false} >
-                        {data}
-                    </TableBody>
-                </Table>
-
+                <ExampleChart rows={temperature.temperatureList} />
              </div>
          );
      }
