@@ -20,7 +20,6 @@ import store from './../../redux/store';
 const NoMatch = () => {
     return <div>NotFound</div>;
 };
-console.log("Running Main.js");
 
 class Main extends React.Component {
     constructor(props) {
@@ -48,8 +47,6 @@ class Main extends React.Component {
 
     render() {
         let state = store.getState();
-    console.log("Main Render STATE=");
-    console.log(state);
         return (
             <Provider store={store}>
                 <div>

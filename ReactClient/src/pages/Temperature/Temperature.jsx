@@ -3,63 +3,116 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import store from './../../redux/store';
 import {gotTemperature} from './../../redux/actions';
+import {objectIdFromDate, dateFromObjectId, previewsday, previewsweek, previewsmonth, previewsyear} from './dateController';
 import axios from 'axios';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import ExampleChart from './Chart.jsx';
 
-function getFormattedDate(date1) {
-  var date = new Date(date1);
-  var year = date.getFullYear();
-  var month = (1 + date.getMonth()).toString();
-  month = month.length > 1 ? month : '0' + month;
-  var day = date.getDate().toString();
-  day = day.length > 1 ? day : '0' + day;
-  var hour = date.getHours().toString();
-  hour = hour.length > 1 ? hour : '0' + hour;
-  var minutes = date.getMinutes().toString();
-  minutes = minutes.length > 1 ? minutes : '0' + minutes;
-  var seconds = date.getSeconds().toString();
-  seconds = seconds.length > 1 ? seconds : '0' + seconds;
-  return hour + ':' + minutes + ':' + seconds + ' ' + month + '/' + day + '/' + year;
-}
 class Temperature extends React.Component {
     constructor(props) {
-         super(props);
-         this.state = store.getState();
-     }
-     componentWillMount() {
-         this.unsubscribe = store.subscribe(() => {
-             this.setState(store.getState());
-         });
-     }
-     componentDidMount() {
-       setInterval(function(){
-         axios.get("/api/private/temperature")
-             .then(function (response) {
-                let temperatureList=[];
-                response.data.map(function(value){
-                    temperatureList.push([new Date(value.date),parseInt(value.temperature)]);
-                });
-                store.dispatch(gotTemperature(temperatureList));
-             })
-             .catch(function (error) {
-                // alert('fail-DidMount');
-                 console.log('fail-DidMount');
-                 console.log(error);
-             });
-       }, 10000);
-     }
-     componentWillUnmount() {
-         this.unsubscribe();
-     }
-     render() {
-         let temperature = store.getState().temperature;
-         return (
-             <div>
-                <ExampleChart rows={temperature.temperatureList} />
-             </div>
-         );
-     }
+        super(props);
+        var filter = {
+            gte: objectIdFromDate(previewsday(new Date())),
+            lte: objectIdFromDate(new Date())
+        }
+            this.querytemperature(filter);
+            this.state = store.getState();
+    }
+    querytemperature(filter){
+        axios.get("/api/private/temperature",{
+            params: {
+                gte: filter.gte,
+                lte: filter.lte
+            }
+        })
+        .then(function (response) {
+            let temperatureList=[];
+            response.data.map(function(value){
+                temperatureList.push([dateFromObjectId(value._id),value.temperature]);
+            });
+            store.dispatch(gotTemperature(temperatureList));
+        })
+        .catch(function (error) {
+            console.log('fail-querytemperature');
+            console.log(error);
+        });
+        this.state = store.getState();
+    }
+    componentWillMount() {
+        this.unsubscribe = store.subscribe(() => {
+            this.setState(store.getState());
+        });
+    }
+    componentDidMount() {
+        this.timerID = setInterval(() => {
+            var filter = {
+                gte: objectIdFromDate(previewsday(new Date())),
+                lte: objectIdFromDate(new Date())
+            }
+        this.querytemperature(filter)
+        }, 10000);
+    }
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+        this.unsubscribe();
+    }
+    render() {
+        return (
+            <div>
+            <Table>
+                <TableHeader displaySelectAll={false}>
+                    <TableRow>
+                        <TableHeaderColumn>
+                            <RaisedButton primary={true} onClick={ this._onClickHandler1day.bind(this) } >Current Day</RaisedButton>
+                            <RaisedButton primary={true} onClick={ this._onClickHandler1week.bind(this) } >Last Week</RaisedButton>
+                            <RaisedButton primary={true} onClick={ this._onClickHandler1month.bind(this) } >Last Month</RaisedButton>
+                            <RaisedButton primary={true} onClick={ this._onClickHandler1year.bind(this) } >Last Year</RaisedButton>
+                        </TableHeaderColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableHeaderColumn>
+                           <ExampleChart rows={this.state.temperature.temperatureList} />
+                        </TableHeaderColumn>
+                    </TableRow>
+                </TableHeader>
+            </Table>
+            </div>
+        );
+    }
+    _onClickHandler1day() {
+        var filter = {
+            gte: objectIdFromDate(previewsday(new Date())),
+            lte: objectIdFromDate(new Date())
+        }
+            this.querytemperature(filter)
+        clearInterval(this.timerID);
+        this.componentDidMount()
+    }
+
+    _onClickHandler1week() {
+        clearInterval(this.timerID);
+        var filter = {
+            gte: objectIdFromDate(previewsweek(new Date())),
+            lte: objectIdFromDate(new Date())
+        }
+        this.querytemperature(filter)
+    }
+    _onClickHandler1month() {
+        clearInterval(this.timerID);
+        var filter = {
+            gte: objectIdFromDate(previewsmonth(new Date())),
+            lte: objectIdFromDate(new Date())
+        }
+        this.querytemperature(filter)
+    }
+    _onClickHandler1year() {
+        clearInterval(this.timerID);
+        var filter = {
+            gte: objectIdFromDate(previewsyear(new Date())),
+            lte: objectIdFromDate(new Date())
+        }
+        this.querytemperature(filter)
+    }
  }
 
 export default Temperature;
