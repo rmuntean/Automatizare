@@ -3,6 +3,7 @@ var router = express.Router();
 var UserController = require('./userController');
 var TemperatureController = require('./temperatureController');
 var BoardController = require('./boardController');
+var SenzorController = require('./senzorController');
 
 // Authentication and Authorization Middleware
 var auth = function(req, res, next) {
@@ -126,7 +127,22 @@ router.get('/private/users', auth, function(req, res) {
 });
 
 router.get('/private/temperature', function(req, res) {
-    TemperatureController.getTemperature(
+    var filter = {
+            gte : req.query.gte,
+            lte : req.query.lte
+        }
+    TemperatureController.getTemperature(filter)
+                .then((temperature) => {
+                    res.send(temperature);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.sendStatus(500);
+                });
+});
+
+router.get('/private/senzors', function(req, res) {
+    SenzorController.getSenzors(
         (code)=>{
             res.sendStatus(status);
         },
@@ -134,5 +150,6 @@ router.get('/private/temperature', function(req, res) {
             res.send(users);
         });
 });
+
 
 module.exports = router;

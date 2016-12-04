@@ -7,38 +7,81 @@ bluebird.promisifyAll(MongoClient);
 
 const connection ="mongodb://" + process.env.DB_CONNECTION + "/automatizare";
 
-var senzors=[];
+//var senzors=[];
 
 senzorController = {
-    populateSenzors: () => {
-    console.log('START-populateSenzors');
-    senzorController.getSenzors().then(function(result){
-    console.log('COMPLETE-populateSenzors');
-    senzors=result;
-    });
-    },
-    getprepopulatedSenzors: () => {
-       return senzors;
-    },
-    getSenzors: () => {
-        return new Promise(function(resolve,reject) {
+//    populateSenzors: () => {
+//    console.log('START-populateSenzors');
+//    senzorController.getSenzors().then(function(result){
+//    console.log('COMPLETE-populateSenzors');
+//    senzors=result;
+//    });
+//    },
+//    getprepopulatedSenzors: () => {
+//       return senzors;
+//    },
+        getSenzors: (err, callback) => {
+            return new Promise(function(resolve,reject) {
             var theDb;
-            return MongoClient.connectAsync(connection)
+            MongoClient.connectAsync(connection)
                 .then(function(db) {
                     theDb = db;
-                    return theDb.collection("senzors").findAsync({});
+                    return theDb.collection("senzors").find({});
                 })
                 .then(function (cursor) {
+                    return new Promise((resolve, reject) => {
                     cursor.toArray((err, items) => {
-                        resolve(items);
+                        callback(items);
+                        return resolve();
+                    });
                     });
                 })
-                .finally(() => {
-                    theDb.close()
-                })
-                .catch(reject);
-        });
-    },
+                .finally(() => {console.log("DB.Close");theDb.close()})
+                .catch((err)=>{
+                    console.log(err);
+                    err(500);
+                });
+            });
+        },
+            getSenzor: (senzor) => {
+                return new Promise(function(resolve,reject) {
+                    var theDb;
+                    return MongoClient.connectAsync(connection)
+                        .then(function(db) {
+                            theDb = db;
+                            return theDb.collection("senzors").findAsync({"mac_id":senzor});
+                        })
+                        .then(function (cursor) {
+                            cursor.toArray((err, items) => {
+                                resolve(items);
+                            });
+                        })
+                        .finally(() => {
+                            theDb.close()
+                        })
+                        .catch(reject);
+                });
+            },
+
+//    getSenzors: () => {
+//        return new Promise(function(resolve,reject) {
+//            var theDb;
+//            return MongoClient.connectAsync(connection)
+//                .then(function(db) {
+//                    theDb = db;
+//                    return theDb.collection("senzors").findAsync({});
+//                })
+//                .then(function (cursor) {
+//                    cursor.toArray((err, items) => {
+//                        resolve(items);
+//                    });
+//                })
+//                .finally(() => {
+//                    theDb.close()
+//                })
+//                .catch(reject);
+//        });
+//    },
 
     addSenzor: (senzor) => {
         return new Promise(function(resolve,reject) {

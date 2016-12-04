@@ -15,7 +15,7 @@
     "express": "~4.13.4",
     "express-session": "^1.14.1",
     "hbs": "~4.0.0",
-    "mongodb": "^2.2.10",
+    "mongodb": "^2.2.12",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
     "mqtt": "~2.0.1"
